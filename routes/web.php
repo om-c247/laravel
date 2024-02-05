@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/blogs/store', [BlogController::class, 'store'])->name('blogs.store');
     Route::get('/blogs/edit/{id}', [BlogController::class, 'edit'])->name('blogs.edit');
     Route::post('/blogs/update/{id}', [BlogController::class, 'update'])->name('blogs.update');
+    Route::post('blogs/like', [BlogController::class, 'like'])->name('blogs.like');
+    
     
 
 

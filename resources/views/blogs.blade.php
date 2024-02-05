@@ -1,58 +1,118 @@
 <!-- resources/views/blogs/index.blade.php -->
-<style>/* Add some spacing and styling to the pagination links */
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
+ <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.pagination li {
-    list-style: none;
-    margin: 0 5px;
-    display: inline-block;
-}
+        header {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+        }
 
-.pagination a, .pagination span {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    color: #333;
-    background-color: #fff;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-.pagination a:hover {
-    background-color: #f5f5f5;
-}
+        .blog-post {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
 
-.pagination .active span {
-    background-color: #007bff;
-    color: #fff;
-    border: 1px solid #007bff;
-}
+        .blog-post h2 {
+            color: #007bff;
+        }
+
+        .blog-post img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .like-comment-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .like-btn, .comment-btn, .post-comment-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .like-btn:hover, .comment-btn:hover, .post-comment-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .comments {
+            display: none;
+            width: 70%;
+        }
+
+        .comments.show {
+            display: block;
+        }
+
+        .comment {
+            background-color: #f5f5f5;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        .comment-input {
+            width: 60%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        .post-comment-btn {
+            width: 30%;
+        }
+        svg.w-5.h-5 {
+            width: 20px;
+            height: 20px;
+        }
 </style>
-    <h1>Blog List</h1>
+   
+   
+<header>
+        <h1>Blog List</h1>
+    </header>
+    <div class="container">
       
     @foreach($blogs->items() as $blog)
-    
-    
-
-
-
-
-        <div class="blog-post">
-         
+    <div class="blog-post">
             <h2>{{ $blog->title }} </h2>
+        <?php
+            foreach ($blog['mediaFiles'] as $mediaFile) {
+                $filename = $mediaFile->filename;
+                $imageUrl = asset('uploads/' . $filename);
+                ?>
+                <img src="{{ $imageUrl }}" alt="Image">
             <?php
-foreach ($blog['mediaFiles'] as $mediaFile) {
-    $filename = $mediaFile->filename;
-    $imageUrl = asset('uploads/' . $filename);
-    ?>
-    <img src="{{ $imageUrl }}" alt="Image">
-<?php
-}
-?>
+            }
+        ?>
 
             <p>Categories: 
                 @foreach ($blog->categories as $category)
@@ -60,17 +120,89 @@ foreach ($blog['mediaFiles'] as $mediaFile) {
                 @endforeach
             
             
-            <p>{!! $blog->description !!}</p>
+            <p> Description: {!! $blog->description !!}</p>
             
            
-            <p><img src="{{ asset('uploads/$blog->filename') }}" alt="Image Alt Text">
-</p>    
+           
             <p>Author: {{ $blog->user->name }}</p>
              {{-- Add more details if needed --}}
-        </div>
-        <hr>
+        
+        <div class="like-comment-section">
+            <button class="like-btn" data-blog-id="{{ $blog->id }}">Like</button>
+            <button class="comment-btn" data-blog-id="{{ $blog->id }}">Comment</button>
+            <div class="comments">
+
+                @foreach ($blog->comments as $comment)
+                    <div class="comment">{{ $comment->content }}</div>
+                @endforeach
+            </div>
+            <textarea class="comment-input" placeholder="Write a comment"></textarea>
+            <button class="post-comment-btn" data-blog-id="{{ $blog->id }}">Post Comment</button>
+        </div>  
+        
+    </div>
     @endforeach
 
-    {{-- Pagination links --}}
+    {{ $blogs->links() }}
+    </div>
+    <script>
+  window.csrfToken = "{{ csrf_token() }}";
+document.addEventListener("DOMContentLoaded", function () {
+    
+    document.querySelectorAll(".like-btn").forEach(function (likeBtn) {
+        likeBtn.addEventListener("click", function () {
+            const blogId = this.getAttribute("data-blog-id");
+
+        const headers = {
+            'X-CSRF-TOKEN': window.csrfToken,
+            'Content-Type': 'application/json',
+        };
+
+   
+        fetch('/blogs/like', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                blogId: blogId,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+         
+        })
+        .catch(error => {
+            console.error('Error:', error);
+           
+        });
+        });
+    });
+
+    document.querySelectorAll(".comment-btn").forEach(function (commentBtn) {
+        commentBtn.addEventListener("click", function () {
+            const commentSection = this.nextElementSibling;
+            commentSection.classList.toggle("show");
+        });
+    });
+
+    document.querySelectorAll(".post-comment-btn").forEach(function (postCommentBtn) {
+        postCommentBtn.addEventListener("click", function () {
+            const blogId = this.getAttribute("data-blog-id");
+            const commentInput = this.previousElementSibling;
+            const commentText = commentInput.value.trim();
+
+            if (commentText !== "") {
+               
+                console.log("Commented on blog with ID:", blogId, "Comment:", commentText);
+
+               
+                commentInput.value = "";
+            }
+        });
+    });
+});
+
+    </script>
+
     
 

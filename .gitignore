@@ -1,0 +1,41 @@
+# Laravel specific
+.env
+vendor/
+public/storage
+public/hot
+storage/*.key
+storage/backups
+storage/framework/cache
+storage/framework/sessions
+storage/framework/testing
+storage/framework/views
+bootstrap/cache
+
+# Homestead/Vagrant
+Homestead.yaml
+Homestead.json
+/.vagrant
+/ansible
+
+# Composer
+/composer.phar
+/vendor/
+
+# IDE
+.idea/
+*.iml
+*.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js
+/node_modules/
+npm-debug.log*
+yarn-error.log*
