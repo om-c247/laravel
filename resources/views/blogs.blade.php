@@ -121,7 +121,18 @@
             
             
             <p> Description: {!! $blog->description !!}</p>
-            
+           
+                Comments:
+            <?php
+            foreach ($blog['comments'] as $comment) {
+                 
+              
+                ?>
+                <div class="comment"> <?php echo $comment->content; ?></div>
+            <?php
+            }
+        ?>
+      
            
            
             <p>Author: {{ $blog->user->name }}</p>
@@ -131,10 +142,12 @@
             <button class="like-btn" data-blog-id="{{ $blog->id }}">Like</button>
             <button class="comment-btn" data-blog-id="{{ $blog->id }}">Comment</button>
             <div class="comments">
-
-                @foreach ($blog->comments as $comment)
+               
+                @foreach ($blog->comments as $comment)  
                     <div class="comment">{{ $comment->content }}</div>
                 @endforeach
+
+               
             </div>
             <textarea class="comment-input" placeholder="Write a comment"></textarea>
             <button class="post-comment-btn" data-blog-id="{{ $blog->id }}">Post Comment</button>
@@ -153,28 +166,28 @@ document.addEventListener("DOMContentLoaded", function () {
         likeBtn.addEventListener("click", function () {
             const blogId = this.getAttribute("data-blog-id");
 
-        const headers = {
-            'X-CSRF-TOKEN': window.csrfToken,
-            'Content-Type': 'application/json',
-        };
+            const headers = {
+                'X-CSRF-TOKEN': window.csrfToken,
+                'Content-Type': 'application/json',
+            };
 
    
-        fetch('/blogs/like', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                blogId: blogId,
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-         
-        })
-        .catch(error => {
-            console.error('Error:', error);
-           
-        });
+            fetch('/blogs/like', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    blogId: blogId,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            
+            });
         });
     });
 
@@ -193,8 +206,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (commentText !== "") {
                
-                console.log("Commented on blog with ID:", blogId, "Comment:", commentText);
+                
+                const headers = {
+                'X-CSRF-TOKEN': window.csrfToken,
+                'Content-Type': 'application/json',
+            };
 
+   
+            fetch('/blogs/comment', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    blogId: blogId,
+                    content: commentText,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            
+            });
                
                 commentInput.value = "";
             }

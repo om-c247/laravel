@@ -30,6 +30,18 @@ class BlogController extends Controller
             'blog_post_id' => $blogPostId,
         ]);
     }
+    public function comment(Request $request) {
+       
+        $user = Auth::user();
+        $blogPostId = $request->blogId;
+        $content = $request->content; 
+        $like = Comment::create([
+            'user_id' => $user->id,
+            'blog_post_id' => $blogPostId,
+            'content' => $content,
+        ]);
+    }
+    
     public function create()
     {
         $categories = Category::all();

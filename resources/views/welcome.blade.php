@@ -22,8 +22,8 @@
     </head>
     <body class="antialiased">
         
-    <a href="{{ url('/login/facebook') }}">Login with Facebook</a>
-<a href="{{ url('/login/google') }}">Login with Google</a>
+    <a href="{{ url('/userlogin') }}">Sign In </a> | <a href="{{ url('/register') }}">Sign Up </a> |
+<a href="{{ url('/login/google') }}">Sign In with Google</a>
 
 
 
