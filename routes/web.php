@@ -6,6 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PlanController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +35,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/blogs/update/{id}', [BlogController::class, 'update'])->name('blogs.update');
     Route::post('blogs/like', [BlogController::class, 'like'])->name('blogs.like');
     Route::post('/blogs/comment', [BlogController::class, 'comment'])->name('blogs.comment');
+    Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+    Route::get('/plans/show/{plan}', [PlanController::class, 'show'])->name('plans.show');
+    Route::post('/plans/subs', [PlanController::class, 'subs'])->name('plans.subs');
+    
+    
+
    
     
 
