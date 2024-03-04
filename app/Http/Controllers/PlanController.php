@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Stripe\Stripe;
 
 class PlanController extends Controller
 {
@@ -28,14 +29,14 @@ class PlanController extends Controller
 
     public function subs(Request $request)
     {
+    
 
         $user = Auth::user();
 
-        
-    
-      
-        $user->newSubscription('silver', 'price_1OnZojSAA073ItmlcLfVd9g9')->create($request->stripe_id);
+
+        $user->newSubscription('silver', 'price_1OnZojSAA073ItmlcLfVd9g9')->create($request->stripeToken);
+
         return redirect()->route('plans.index')->with('success', 'You have successfully subscribed to the plan');
-    }
+            }
     
 }

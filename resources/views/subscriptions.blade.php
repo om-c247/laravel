@@ -12,6 +12,8 @@
         <h1>Subscribe to our service</h1>
         <form id="subscription-form" method="post" action="{{ route('plans.subs') }}">
             @csrf
+
+            <?php print_r($intent->client_secret); ?>
             <div class="form-group">
                 <label for="card-holder-name">Cardholder Name</label>
                 <input type="text" id="card-holder-name" name="card-holder-name">
@@ -37,44 +39,28 @@
     var form = document.getElementById('subscription-form');
     var cardButton = document.getElementById('submit-button');
     var cardErrors = document.getElementById('card-errors');
-
-    form.addEventListener('submit', function(event) {
+    console.log("cardElement" + JSON.stringify(cardElement));     
+    form.addEventListener('submit', async function(event) {
         event.preventDefault();
         cardButton.disabled = true;
-        stripe.createToken(cardElement, {
-            name: cardHolderName.value
-        }).then(function(result) {
-            if (result.error) {
-                cardErrors.textContent = result.error.message;
-                cardButton.disabled = false;
-            } else {
-                stripeTokenHandler(result.token);
+        const { setupIntent,error } = await stripe.confirmCardSetup(
+            "<?php echo $intent->client_secret;?>",
+            {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: { name: cardHolderName.value }
+                }
             }
-        });
-        stripe.createPaymentMethod({
-            type: 'card',
-            card: cardElement,
-            billing_details: {
-                name: cardHolderName.value
-            }
-        }).then(function(result) {
-            if (result.error) {
-                cardErrors.textContent = result.error.message;
-                cardButton.disabled = false;
-            } else {
-                // Payment method created successfully
-                // You can handle the result here (e.g., save the payment method ID)
-                console.log(result.paymentMethod);
-                var hiddenInput = document.createElement('input');
-        hiddenInput.setAttribute('type', 'hidden');
-        hiddenInput.setAttribute('name', 'payment_method_id');
-        hiddenInput.setAttribute('value', result.paymentMethod.id);
-        form.appendChild(hiddenInput);
-               // alert(JSON.stringify(paymentMethod));
-                // Optionally, submit the form to your server for further processing
-                form.submit();
-            }
-        });
+        );
+        if (error) {
+            // Display "error.message" to the user...
+            cardButton.disabled = false;
+        } else {
+            alert(setupIntent)
+            // The card has been verified successfully...
+            stripeTokenHandler(setupIntent);
+        }
+        
     });
 
 
@@ -86,11 +72,12 @@
         var hiddenInput = document.createElement('input');
         hiddenInput.setAttribute('type', 'hidden');
         hiddenInput.setAttribute('name', 'stripeToken');
-        hiddenInput.setAttribute('value', token.id);
+        alert(token.payment_method);
+        hiddenInput.setAttribute('value', token.payment_method);
         form.appendChild(hiddenInput);
         
         // Submit the form
-       // form.submit();
+       form.submit();
     }
 });
 

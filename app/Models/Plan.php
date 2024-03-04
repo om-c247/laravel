@@ -19,9 +19,9 @@ class Plan extends Model
         return "slug";
     }
 
-    public function show(Plan $plan, Request $request)
-    {
-        $intent = auth()->user()->createSetupIntent();
-        return view('subscriptions', compact('plan','intent'));
-    }
+    // public function show(Plan $plan, Request $request)
+    // {
+    //     $intent = auth()->user()->createSetupIntent();
+    //     return view('subscriptions', compact('plan','intent'));
+    // }
 }
